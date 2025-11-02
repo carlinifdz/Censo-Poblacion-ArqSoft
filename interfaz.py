@@ -6,9 +6,10 @@ import pandas as pd
 import mysql.connector
 
 # Importa tus modelos TAL CUAL los tiene tu compañero (no cambies nombres)
-from database import get_connection
-from domicilio import domicilio as DomicilioModel
-from habitante import habitante as HabitanteModel
+from registro.domicilios import domicilio as DomicilioModel
+from registro.habitantes import habitante as HabitanteModel
+from database.conn import get_connection
+
 
 # ---------- Utilidades de DB ----------
 def fetch_colonias():
