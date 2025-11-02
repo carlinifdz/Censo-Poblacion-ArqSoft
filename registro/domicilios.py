@@ -1,4 +1,4 @@
-from database import get_connection
+from database.conn import get_connection
 
 class domicilio:
     def __init__ (self):
@@ -65,6 +65,15 @@ class domicilio:
             if not resultado:
                 print("No se encontró el domicilio a editar.")
                 return False
+            
+            nuevo_calle = nuevo_calle or calle
+            nuevo_numero = nuevo_numero or numero
+
+            resultado_existe = self.buscar_domicilio(nuevo_calle, nuevo_numero, colonia_id)
+
+            if resultado_existe and (resultado_existe[0] != resultado[0]):
+                print("Ya existe uno con ese nombre")
+                return False
 
             campos = []
             valores = []
@@ -83,17 +92,15 @@ class domicilio:
                 print("No se especificaron campos a actualizar.")
                 return False
 
-            valores.append(calle)
-            valores.append(numero)
-            valores.append(colonia_id)
+            valores.append(valores[0])
 
-            query = f"UPDATE domicilios SET {', '.join(campos)} WHERE calle = %s AND numero = %s AND colonia_id = %s"
-
+            query = f"UPDATE domicilios SET {', '.join(campos)} WHERE id = %s"
+            
             cursor.execute(query, tuple(valores))
             connection.commit()
 
             if cursor.rowcount > 0:
-                print("domicilio actualizado correctamente.")
+                print("Domicilio actualizado correctamente.")
                 return True
             else:
                 print("No se realizaron cambios.")
@@ -137,3 +144,10 @@ class domicilio:
         finally:
             cursor.close()
             connection.close()
+
+if __name__ == "__main__":
+    dom = domicilio()
+
+    dom.registrar_domicilio("Vivienda de concreto", "Ildelfonso Fuentes", 668, 50300001)
+    dom.editar_domicilio("Ildelfonso Fuentes", 668, 50300001,nuevo_calle="Ildelfonso Flores")
+    #dom.eliminar_domicilio("Ildelfonso Flores", 668, 50300001)

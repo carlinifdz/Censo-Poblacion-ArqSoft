@@ -1,0 +1,8 @@
+Para correr algun codigo con imports de otra carpeta, 
+en la consola poner lo siguiente:
+python -m "nombre de la carpeta"."nombre del archivo"
+
+al inicio de cada codigo poner:
+from "nombre de la carpeta"."nombre del archivo" import "nombre del metodo"
+
+recuerda guardar antes de ejecutar el archivo

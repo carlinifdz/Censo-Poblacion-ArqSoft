@@ -1,4 +1,5 @@
-from database import get_connection
+from database.conn import get_connection
+from datetime import date
 
 class habitante:
     def __init__ (self):
@@ -67,6 +68,14 @@ class habitante:
                 print("No se encontró el habitante a editar.")
                 return False
 
+            nuevo_nombre = nuevo_nombre or nombre
+
+            resultado_existe = self.buscar_habitante(nuevo_nombre, domicilio_id)
+
+            if resultado_existe and (resultado_existe[0] != resultado[0]):
+                print("Ya existe un habitante con ese nombre en el mismo domicilio.")
+                return False
+
             campos = []
             valores = []
 
@@ -87,10 +96,9 @@ class habitante:
                 print("No se especificaron campos a actualizar.")
                 return False
 
-            valores.append(nombre)
-            valores.append(domicilio_id)
+            valores.append(resultado[0])
 
-            query = f"UPDATE habitantes SET {', '.join(campos)} WHERE nombre = %s AND domicilio_id = %s"
+            query = f"UPDATE habitantes SET {', '.join(campos)} WHERE id = %s"
 
             cursor.execute(query, tuple(valores))
             connection.commit()
@@ -121,8 +129,8 @@ class habitante:
                 print("No se encontró el habitante a eliminar.")
                 return False
 
-            query = "DELETE FROM habitantes WHERE nombre = %s AND domicilio_id = %s"
-            values = (nombre, domicilio_id)
+            query = "DELETE FROM habitantes WHERE id = %s"
+            values = (resultado[0],)
             cursor.execute(query, values)
             connection.commit()
 
@@ -140,3 +148,13 @@ class habitante:
         finally:
             cursor.close()
             connection.close()
+
+if __name__ == "__main__":
+    hab = habitante()
+    
+    #YYYY-MM-DD
+    #fecha_nac = date(2004, 11, 11)
+    #hab.registrar_habitante("Carlo Hiram Fernandez Salinas", fecha_nac, 'M', 6, "Ninguna")
+    #hab.editar_habitante("Carlo Hiram Fernandez Salinas", 6 ,nuevo_nombre = "Carlo Manuel Fernandez Salinas,")
+
+    #hab.eliminar_habitante("Carlo Hiram Fernandez Salinas", 1)

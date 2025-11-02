@@ -1,7 +1,7 @@
 from conn import get_connection
 import mysql.connector
 
-def fetch_casas():
+def fetch_domicilios():
     connection = get_connection()
 
     if connection is None:
@@ -25,4 +25,4 @@ def fetch_casas():
             connection.close()
 
 if __name__ == "__main__":
-    fetch_casas()
+    fetch_domicilios()
