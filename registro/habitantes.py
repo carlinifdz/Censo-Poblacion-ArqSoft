@@ -175,8 +175,8 @@ if __name__ == "__main__":
     #print(edad)
 
     #YYYY-MM-DD
-    fecha_nac = date(2004, 11, 11)
-    hab.registrar_habitante("Carlos Hiram Fernandez Salinas", fecha_nac, 'M', 5, "Ninguna")
+    #fecha_nac = date(2004, 11, 11)
+    #hab.registrar_habitante("Carlos Hiram Fernandez Salinas", fecha_nac, 'M', 5, "Ninguna")
     #hab.editar_habitante("Carlo Hiram Fernandez Salinas", 6 ,nuevo_nombre = "Carlo Manuel Fernandez Salinas,")
 
     #hab.eliminar_habitante("Carlo Hiram Fernandez Salinas", 1)

@@ -138,3 +138,33 @@ class colonia:
         finally:
             cursor.close()
             connection.close()
+
+    def obtener_por_ciudad(self, localidad):
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        try:
+            query = "SELECT nombre FROM colonias WHERE localidad = %s"
+            cursor.execute(query, (localidad,))
+            resultado = cursor.fetchall()
+
+            if cursor.rowcount > 0:
+                return resultado
+            else:
+                return []
+
+
+        except Exception as e:
+            print("Error:", e)
+            return False
+
+        finally:
+            cursor.close()
+            connection.close()
+
+if __name__ == "__main__":
+    col = colonia()
+
+    resultado = col.obtener_por_ciudad("Saltillo")
+    for i in resultado:
+        print(i[0])
