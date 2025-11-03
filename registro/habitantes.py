@@ -149,12 +149,34 @@ class habitante:
             cursor.close()
             connection.close()
 
+    def obtener_edad(self, nombre, domicilio_id):
+
+        resultado = self.buscar_habitante(nombre, domicilio_id)
+
+        if not resultado:
+            print("No se encontró el habitante.")
+            return None
+
+        fecha_nac = resultado[2]
+        hoy = date.today()
+        
+        # Calcular edad
+        edad = hoy.year - fecha_nac.year
+        if (hoy.month, hoy.day) < (fecha_nac.month, fecha_nac.day):
+            edad -= 1
+
+        return edad
+
 if __name__ == "__main__":
     hab = habitante()
     
+    #edad = hab.obtener_edad("Carlo Hiram Fernandez Salinas", 6)
+
+    #print(edad)
+
     #YYYY-MM-DD
-    #fecha_nac = date(2004, 11, 11)
-    #hab.registrar_habitante("Carlo Hiram Fernandez Salinas", fecha_nac, 'M', 6, "Ninguna")
+    fecha_nac = date(2004, 11, 11)
+    hab.registrar_habitante("Carlos Hiram Fernandez Salinas", fecha_nac, 'M', 5, "Ninguna")
     #hab.editar_habitante("Carlo Hiram Fernandez Salinas", 6 ,nuevo_nombre = "Carlo Manuel Fernandez Salinas,")
 
     #hab.eliminar_habitante("Carlo Hiram Fernandez Salinas", 1)

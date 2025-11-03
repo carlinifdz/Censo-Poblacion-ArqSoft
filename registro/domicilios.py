@@ -145,9 +145,162 @@ class domicilio:
             cursor.close()
             connection.close()
 
+    def obtener_habitantes(self,calle, numero, colonia_id):
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        try:
+            resultado = self.buscar_domicilio(calle, numero, colonia_id)
+
+            if not resultado:
+                print("No se encontró el domicilio.")
+                return []
+            
+            query = "SELECT id, nombre, fecha_nac, sexo, act_eco FROM habitantes WHERE domicilio_id = %s"
+            values = (resultado[0],)
+            cursor.execute(query,values)
+            habitantes = cursor.fetchall()
+            cantidad = len(habitantes)
+            
+            if cantidad > 0:
+                print(f"Habitantes en el domicilio: {cantidad}")
+                return habitantes
+            else:
+                print("No hay nadie viviendo en es domicilio")
+            
+        except Exception as e:
+            print("Error al contar habitantes: ", e)
+            return []
+
+        finally:
+            cursor.close()
+            connection.close()
+
+    def contar_habitantes(self,calle, numero, colonia_id):
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        try:
+            resultado = self.buscar_domicilio(calle, numero, colonia_id)
+
+            if not resultado:
+                print("No se encontró el domicilio.")
+                return 0
+            
+            query = "SELECT COUNT(*) FROM habitantes WHERE domicilio_id = %s"
+            values = (resultado[0],)
+            cursor.execute(query,values)
+            cantidad = cursor.fetchone()[0]
+            
+            if cantidad > 0:
+                print(f"Habitantes en el domicilio: {cantidad}")
+                return cantidad
+            else:
+                print("No hay nadie viviendo en ese domicilio")
+                return 0
+            
+        except Exception as e:
+            print("Error al contar habitantes: ", e)
+            return 0
+
+        finally:
+            cursor.close()
+            connection.close()
+
+    def contar_habitantes_colonia(self, colonia_id):
+        connection = get_connection()
+        cursor = connection.cursor()
+
+        try:
+            cursor.execute("SELECT id FROM colonias WHERE id = %s", (colonia_id,))
+            colonia = cursor.fetchone()
+
+            if not colonia:
+                print("No se encontró la colonia.")
+                return 0
+            
+            query = """
+            SELECT COUNT(h.id)
+            FROM habitantes h
+            JOIN domicilios d ON h.domicilio_id = d.id
+            WHERE d.colonia_id = %s
+            """
+            cursor.execute(query,(colonia_id,))
+            cantidad = cursor.fetchone()[0]
+            
+            if cantidad > 0:
+                print(f"Habitantes en la colonia: {cantidad}")
+                return cantidad
+            else:
+                print("No hay nadie viviendo en esa colonia")
+                return 0
+            
+        except Exception as e:
+            print("Error al contar habitantes: ", e)
+            return 0
+
+        finally:
+            cursor.close()
+            connection.close()
+
+    def obtener_habitantes_colonia(self, colonia_id):
+        connection = get_connection()
+        cursor = connection.cursor(dictionary=True)
+
+        try:
+            cursor.execute("SELECT nombre FROM colonias WHERE id = %s", (colonia_id,))
+            colonia = cursor.fetchone()
+
+            if not colonia:
+                print("No se encontró la colonia.")
+                return []
+
+            query = """
+                SELECT 
+                    h.id AS habitante_id,
+                    h.nombre AS habitante_nombre,
+                    h.fecha_nac,
+                    h.sexo,
+                    h.act_eco,
+                    d.id AS domicilio_id,
+                    d.calle,
+                    d.numero,
+                    c.nombre AS colonia_nombre
+                FROM habitantes h
+                JOIN domicilios d ON h.domicilio_id = d.id
+                JOIN colonias c ON d.colonia_id = c.id
+                WHERE c.id = %s
+                ORDER BY d.calle, d.numero, h.nombre
+            """
+
+            cursor.execute(query, (colonia_id,))
+            habitantes = cursor.fetchall()
+
+            if habitantes:
+                print(f"Se encontraron {len(habitantes)} habitantes en la colonia '{colonia['nombre']}'.")
+                return habitantes
+            else:
+                print(f"No hay habitantes registrados en la colonia '{colonia['nombre']}'.")
+                return []
+
+        except Exception as e:
+            print("Error al obtener habitantes por colonia:", e)
+            return []
+
+        finally:
+            cursor.close()
+            connection.close()
+
+
+
 if __name__ == "__main__":
     dom = domicilio()
 
-    dom.registrar_domicilio("Vivienda de concreto", "Ildelfonso Fuentes", 668, 50300001)
-    dom.editar_domicilio("Ildelfonso Fuentes", 668, 50300001,nuevo_calle="Ildelfonso Flores")
+    #dom.registrar_domicilio("Vivienda de concreto", "Ildelfonso Fuentes", 668, 50300001)
+    #dom.editar_domicilio("Ildelfonso Fuentes", 668, 50300001,nuevo_calle="Ildelfonso Flores")
     #dom.eliminar_domicilio("Ildelfonso Flores", 668, 50300001)
+    #conteo = dom.contar_habitantes("Ildelfonso Fuentes", 668, 50300001)
+    #conteo = dom.contar_habitantes_colonia(50300001)
+    #conteo = dom.obtener_habitantes_colonia(50300001)
+    #for persona in conteo:
+    #    print(f"{persona['habitante_nombre']} ({persona['sexo']}) - {persona['calle']} #{persona['numero']}, {persona['colonia_nombre']}")
