@@ -1,4 +1,3 @@
-# app.py
 import tkinter as tk
 from tkinter import ttk
 
@@ -16,7 +15,7 @@ class App(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title("Censo de población INEGI – Desktop (MVC)")
-        self.geometry("980x600")
+        self.geometry("980x800")
         self.style = ttk.Style(self)
         self.style.theme_use("vista" if "vista" in self.style.theme_names() else "clam")
 
@@ -54,11 +53,10 @@ class App(tk.Tk):
             go_domicilios=self._show_domicilios,
             go_habitantes=self._show_habitantes,
             go_reportes=self._show_reportes,
-            go_registro=self._show_registro_combinado,   # ← AGREGA ESTO
+            go_registro=self._show_registro_combinado,
             do_logout=self._logout,
             do_exit=self.destroy
         ).pack(fill="both", expand=True)
-
 
     def _logout(self):
         session.logout()

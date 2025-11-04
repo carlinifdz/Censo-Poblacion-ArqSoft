@@ -29,11 +29,11 @@ def fetch_colonias_by_ciudad(ciudad):
     try:
         with conn.cursor() as cur:
             cur.execute(
-                "SELECT id, nombre, localidad FROM colonias WHERE localidad=%s ORDER BY nombre",
+                "SELECT id, nombre FROM colonias WHERE localidad=%s ORDER BY nombre",
                 (ciudad,)
             )
             rows = cur.fetchall()
-            return [(r[0], f"{r[1]} - {r[2]}") for r in rows]
+            return [(r[0], f"{r[1]}") for r in rows]
     finally:
         try: conn.close()
         except: pass
@@ -58,7 +58,8 @@ class RegistroCombinadoView(ttk.Frame):
 
         ttk.Label(self, text="Colonia").grid(row=1, column=2, sticky="e")
         self.colonia_map = []  # [(id, label)]
-        self.colonia = ttk.Combobox(self, values=[], state="readonly", width=35)
+        self.colonia = ttk.Combobox(self, values=[], width=35)
+        self.colonia.bind("<KeyRelease>", self._filtrar_colonias)
         self.colonia.grid(row=1, column=3, padx=6, pady=6, sticky="w")
 
         ttk.Separator(self).grid(row=2, column=0, columnspan=6, sticky="ew", pady=8)
@@ -81,12 +82,12 @@ class RegistroCombinadoView(ttk.Frame):
         ttk.Label(self, text="HABITANTE", font=("Segoe UI", 12, "bold")).grid(row=5, column=0, sticky="w", pady=(4,0))
         ttk.Label(self, text="Nombre").grid(row=6, column=0, sticky="e")
         ttk.Label(self, text="Fecha nac. (YYYY-MM-DD)").grid(row=6, column=2, sticky="e")
-        ttk.Label(self, text="Sexo (F/M/X)").grid(row=6, column=4, sticky="e")
+        ttk.Label(self, text="Sexo (F/M)").grid(row=6, column=4, sticky="e")
         ttk.Label(self, text="Actividad económica").grid(row=7, column=0, sticky="e")
 
         self.nombre = ttk.Entry(self, width=28)
         self.fecha = ttk.Entry(self, width=18)
-        self.sexo = ttk.Combobox(self, values=["F","M","X"], state="readonly", width=5)
+        self.sexo = ttk.Combobox(self, values=["F","M"], state="readonly", width=5)
         self.act = ttk.Entry(self, width=40)
 
         self.nombre.grid(row=6, column=1, padx=6, pady=6, sticky="w")
@@ -95,7 +96,7 @@ class RegistroCombinadoView(ttk.Frame):
         self.act.grid(row=7, column=1, padx=6, pady=6, sticky="w", columnspan=3)
 
         # ---------- Botones combinados ----------
-        ttk.Button(self, text="Registrar (auto crea domicilio si no existe)", command=self.registrar_combinado)\
+        ttk.Button(self, text="Registrar", command=self.registrar_combinado)\
             .grid(row=8, column=1, padx=6, pady=10, sticky="ew", columnspan=2)
 
         ttk.Button(self, text="Editar domicilio", command=self.editar_domicilio)\
@@ -124,9 +125,29 @@ class RegistroCombinadoView(ttk.Frame):
         self.colonia["values"] = [c[1] for c in self.colonia_map]
         self.colonia.set("")
 
+    def _filtrar_colonias(self, event):
+        """Filtra las colonias según el texto escrito en el ComboBox."""
+        texto = self.colonia.get().lower().strip()
+
+        # Si no hay ciudad seleccionada, no hacemos nada
+        if not self.ciudad.get():
+            return
+
+        # Si no hay texto, mostrar todas las colonias de la ciudad actual
+        if not texto:
+            self.colonia["values"] = [c[1] for c in self.colonia_map]
+            return
+
+        # Filtrar colonias que contengan el texto
+        filtradas = [c[1] for c in self.colonia_map if texto in c[1].lower()]
+        self.colonia["values"] = filtradas
+
     def _colonia_id_sel(self):
-        i = self.colonia.current()
-        return None if i < 0 else self.colonia_map[i][0]
+        texto = self.colonia.get().strip().lower()
+        for cid, nombre in self.colonia_map:
+            if texto == nombre.lower():
+                return cid
+        return None
 
     def _dom_id_by_inputs(self):
         """Busca domicilio por (calle, numero, colonia_id)."""

@@ -176,7 +176,7 @@ class domicilio:
             cursor.close()
             connection.close()
 
-    def contar_habitantes(self,calle, numero, colonia_id):
+    def contar_habitantes(self, calle, numero, colonia_id):
         connection = get_connection()
         cursor = connection.cursor()
 
@@ -290,8 +290,6 @@ class domicilio:
         finally:
             cursor.close()
             connection.close()
-
-
 
 if __name__ == "__main__":
     dom = domicilio()
