@@ -16,7 +16,7 @@ class ReportesView(ttk.Frame):
         ttk.Label(self, text="Colonia").grid(row=1, column=2, sticky="e")
         ttk.Label(self, text="Tipo vivienda").grid(row=1, column=4, sticky="e")
 
-        self.ciudad = ttk.Combobox(self, width=20)
+        self.ciudad = ttk.Combobox(self, width=20, state="readonly")
         self.colonia = ttk.Combobox(self, width=20)
         self.tipo = ttk.Combobox(self, width=25)
 
@@ -48,12 +48,18 @@ class ReportesView(ttk.Frame):
         self.tabla.grid(row=4, column=0, columnspan=6, pady=10, sticky="ew")
 
         # ---------- Inicialización ----------
+        self.colonia_map = []  # [(id, nombre)] cache de colonias filtradas
         self._cargar_opciones()
         bus.subscribe("domicilio_changed", lambda: self.refresh_all())
         bus.subscribe("habitante_changed", lambda: self.refresh_all())
 
+        # Eventos dinámicos
+        self.ciudad.bind("<<ComboboxSelected>>", self._refrescar_colonias)
+        self.colonia.bind("<KeyRelease>", self._filtrar_colonias)
+
         self.refresh_all()
 
+    # ---------- Helpers de BD ----------
     def _query(self, sql, params=None):
         conn = get_connection()
         if conn is None:
@@ -71,13 +77,37 @@ class ReportesView(ttk.Frame):
         """Carga valores iniciales en los combobox."""
         ciudades = [r[0] for r in self._query("SELECT DISTINCT localidad FROM colonias ORDER BY localidad")]
         tipos = [r[0] for r in self._query("SELECT DISTINCT tipo_casa FROM domicilios ORDER BY tipo_casa")]
-        colonias = [r[0] for r in self._query("SELECT DISTINCT nombre FROM colonias ORDER BY nombre")]
-
         self.ciudad["values"] = ciudades
         self.tipo["values"] = tipos
-        self.colonia["values"] = colonias
+        self.colonia["values"] = []  # se llenará dinámicamente
+
+    # ---------- Nuevos métodos de filtrado dinámico ----------
+    def _refrescar_colonias(self, *_):
+        """Carga las colonias correspondientes a la ciudad seleccionada."""
+        ciudad = self.ciudad.get()
+        if not ciudad:
+            self.colonia_map = []
+            self.colonia["values"] = []
+            return
+        rows = self._query(
+            "SELECT id, nombre FROM colonias WHERE localidad=%s ORDER BY nombre",
+            (ciudad,)
+        )
+        self.colonia_map = rows
+        self.colonia["values"] = [r[1] for r in rows]
+        self.colonia.set("")
+
+    def _filtrar_colonias(self, event):
+        """Filtra las colonias a medida que se escribe en el Combobox."""
+        texto = self.colonia.get().lower().strip()
+        if not texto:
+            self.colonia["values"] = [c[1] for c in self.colonia_map]
+            return
+        filtradas = [c[1] for c in self.colonia_map if texto in c[1].lower()]
+        self.colonia["values"] = filtradas
+
+    # ---------- Reportes ----------
     def _plot(self, labels, values, title):
-        # eliminar gráfica anterior
         if self.canvas:
             self.canvas.get_tk_widget().destroy()
 
@@ -88,7 +118,6 @@ class ReportesView(ttk.Frame):
         ax.tick_params(axis='x', rotation=30)
         fig.subplots_adjust(bottom=0.25, left=0.1, right=0.95, top=0.9)
 
-        # Mostrar etiquetas encima de las barras
         for bar in bars:
             height = bar.get_height()
             ax.text(bar.get_x() + bar.get_width()/2, height + 0.05*max(values), f"{int(height)}",
@@ -99,7 +128,6 @@ class ReportesView(ttk.Frame):
         self.canvas.get_tk_widget().grid(row=5, column=0, columnspan=6, pady=10)
 
     def _where_filtros(self):
-        """Devuelve SQL WHERE dinámico según filtros."""
         where = []
         params = []
 
@@ -154,18 +182,26 @@ class ReportesView(ttk.Frame):
         self._actualizar_tabla(rows)
 
     def _actualizar_tabla(self, rows):
-        """Llena el Treeview con resultados."""
+        # Limpiar tabla previa
         for i in self.tabla.get_children():
             self.tabla.delete(i)
+
+        total = 0
         for nombre, cantidad in rows:
             self.tabla.insert("", "end", values=(nombre, cantidad))
+            total += cantidad or 0
+
+        # Fila de total
+        if rows:
+            self.tabla.insert("", "end", values=("TOTAL", total))
 
     def _limpiar_filtros(self):
         self.ciudad.set("")
         self.colonia.set("")
         self.tipo.set("")
+        self.colonia_map = []
+        self.colonia["values"] = []
         self.refresh_all()
 
     def refresh_all(self):
-        """Actualiza ambas gráficas con los filtros actuales."""
         self.reporte_municipios()

@@ -72,9 +72,12 @@ class App(tk.Tk):
 
     def _show_reportes(self):
         self._clear()
-        if self.reportes_frame is None:
+
+        if self.reportes_frame is None or not self.reportes_frame.winfo_exists():
             self.reportes_frame = ReportesView(self, go_back=self._show_menu)
+
         self.reportes_frame.pack(fill="both", expand=True)
+
         if self.reports_dirty:
             self.reportes_frame.refresh_all()
             self.reports_dirty = False
