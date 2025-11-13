@@ -99,14 +99,8 @@ class RegistroCombinadoView(ttk.Frame):
         ttk.Button(self, text="Registrar", command=self.registrar_combinado)\
             .grid(row=8, column=1, padx=6, pady=10, sticky="ew", columnspan=2)
 
-        ttk.Button(self, text="Editar domicilio", command=self.editar_domicilio)\
-            .grid(row=8, column=3, padx=6, pady=10, sticky="ew")
-
         ttk.Button(self, text="Eliminar domicilio", command=self.eliminar_domicilio)\
             .grid(row=8, column=4, padx=6, pady=10, sticky="ew")
-
-        ttk.Button(self, text="Editar habitante", command=self.editar_habitante)\
-            .grid(row=9, column=1, padx=6, pady=4, sticky="ew")
 
         ttk.Button(self, text="Eliminar habitante", command=self.eliminar_habitante)\
             .grid(row=9, column=2, padx=6, pady=4, sticky="ew")
@@ -198,17 +192,6 @@ class RegistroCombinadoView(ttk.Frame):
             bus.emit("habitante_changed")
 
     # ---------- CRUD “rápido” con métodos del compa ----------
-    def editar_domicilio(self):
-        cid = self._colonia_id_sel()
-        if not (cid and self.calle.get() and self.numero.get()):
-            messagebox.showwarning("Domicilio","Indica colonia, calle y número.")
-            return
-        ok = self.dom_model.editar_domicilio(
-            self.calle.get().strip(), self.numero.get().strip(), cid, nuevo_tipo_casa=self.tipo.get() or None
-        )
-        messagebox.showinfo("Domicilio", "Actualizado" if ok else "No se actualizó")
-        if ok: bus.emit("domicilio_changed")
-
     def eliminar_domicilio(self):
         cid = self._colonia_id_sel()
         if not (cid and self.calle.get() and self.numero.get()):
@@ -219,26 +202,6 @@ class RegistroCombinadoView(ttk.Frame):
         ok = self.dom_model.eliminar_domicilio(self.calle.get().strip(), self.numero.get().strip(), cid)
         messagebox.showinfo("Domicilio", "Eliminado" if ok else "No se eliminó")
         if ok: bus.emit("domicilio_changed")
-
-    def editar_habitante(self):
-        cid = self._colonia_id_sel()
-        if not (cid and self.nombre.get()):
-            messagebox.showwarning("Habitante","Indica colonia y nombre para localizar.")
-            return
-        dom_id = self._dom_id_by_inputs()
-        if not dom_id:
-            messagebox.showerror("Habitante","No se encontró el domicilio actual.")
-            return
-        ok = self.hab_model.editar_habitante(
-            self.nombre.get().strip(),
-            domicilio_id=dom_id,
-            nuevo_nombre=self.nombre.get().strip(),
-            nuevo_sexo=self.sexo.get() or None,
-            nuevo_act_eco=self.act.get().strip() or None,
-            nuevo_fecha_nac=self.fecha.get().strip() or None
-        )
-        messagebox.showinfo("Habitante", "Actualizado" if ok else "No se actualizó")
-        if ok: bus.emit("habitante_changed")
 
     def eliminar_habitante(self):
         cid = self._colonia_id_sel()

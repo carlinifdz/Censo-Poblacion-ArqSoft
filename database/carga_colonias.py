@@ -8,12 +8,10 @@ connection = get_connection()
 cursor = connection.cursor()
 
 for i in range (len(df)):
-    id = df['CVEGEO'].iloc[i]
     nombre = df['NOM_LOC'].iloc[i]
     localidad = df['NOM_MUN'].iloc[i]
-    ambito = df['AMBITO'].iloc[i]
-    query = """INSERT INTO colonias (id, nombre, localidad, ambito) VALUES(%s,%s,%s,%s) """
-    values = (int(np.int64(id)), nombre, localidad, ambito)
+    query = """INSERT INTO colonias (nombre, localidad) VALUES(%s,%s) """
+    values = (nombre, localidad)
 
     cursor.execute(query, values)
 
