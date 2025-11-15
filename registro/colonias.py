@@ -5,7 +5,7 @@ class colonia:
     def __init__ (self):
         pass
 
-    def registrar_colonia(self, id, nombre, localidad, ambito):
+    def registrar_colonia(self, nombre, localidad):
         connection = get_connection()
         cursor = connection.cursor()
 
@@ -17,10 +17,10 @@ class colonia:
                 return False
             else:
                 query = """
-                    INSERT INTO colonias (id, nombre, localidad, ambito)
-                    VALUES (%s, %s, %s, %s)
+                    INSERT INTO colonias (nombre, localidad)
+                    VALUES (%s, %s)
                 """
-                values = (id, nombre, localidad, ambito)
+                values = (nombre, localidad)
                 cursor.execute(query, values)
                 connection.commit()
                 print("colonia registrada correctamente.")
@@ -34,14 +34,13 @@ class colonia:
             cursor.close()
             connection.close()
 
-    
     def buscar_colonia(self, nombre, localidad):
         connection = get_connection()
         cursor = connection.cursor()
 
         try:
             query = """
-                SELECT id, nombre, localidad, ambito
+                SELECT id, nombre, localidad
                 FROM colonias
                 WHERE nombre = %s AND localidad = %s
             """
@@ -139,32 +138,4 @@ class colonia:
             cursor.close()
             connection.close()
 
-    def obtener_por_ciudad(self, localidad):
-        connection = get_connection()
-        cursor = connection.cursor()
 
-        try:
-            query = "SELECT nombre FROM colonias WHERE localidad = %s"
-            cursor.execute(query, (localidad,))
-            resultado = cursor.fetchall()
-
-            if cursor.rowcount > 0:
-                return resultado
-            else:
-                return []
-
-
-        except Exception as e:
-            print("Error:", e)
-            return False
-
-        finally:
-            cursor.close()
-            connection.close()
-
-if __name__ == "__main__":
-    col = colonia()
-
-    resultado = col.obtener_por_ciudad("Saltillo")
-    for i in resultado:
-        print(i[0])

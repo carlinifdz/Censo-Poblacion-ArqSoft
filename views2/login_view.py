@@ -53,7 +53,7 @@ class LoginView():
 
         if ok:
             session.login(username)
-            self.root.destroy()  # <-- Cierra la ventana de login
+            self.root.destroy()
             self.on_success(username)
         else:
             CTkMessagebox(title="Login", message="Usuario o contraseña incorrectos.", icon="warning")
@@ -70,7 +70,7 @@ class LoginView():
 
         if ok:
             session.login(username)
-            self.root.destroy()  # <-- Cierra la ventana de login
+            self.root.destroy()
             self.on_success(username)
         else:
             CTkMessagebox(title="Login", message="Usuario o contraseña incorrectos.", icon="warning")

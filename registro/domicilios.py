@@ -47,10 +47,7 @@ class domicilio:
             cursor.execute(query, values)
             result = cursor.fetchone()
 
-            if result:
-                return result
-            else:
-                return False
+            return result
         finally:
             cursor.close()
             connection.close()
@@ -66,13 +63,14 @@ class domicilio:
                 print("No se encontró el domicilio a editar.")
                 return False
             
-            nuevo_calle = nuevo_calle or calle
-            nuevo_numero = nuevo_numero or numero
+            domicilio_id = resultado[0]
 
+            nuevo_calle = nuevo_calle or calle
+            nuevo_numero = int(nuevo_numero) if nuevo_numero else int(numero)
             resultado_existe = self.buscar_domicilio(nuevo_calle, nuevo_numero, colonia_id)
 
-            if resultado_existe and (resultado_existe[0] != resultado[0]):
-                print("Ya existe uno con ese nombre")
+            if resultado_existe and resultado_existe[0] != domicilio_id:
+                print("Ya existe un domicilio con esos datos.")
                 return False
 
             campos = []
@@ -81,9 +79,11 @@ class domicilio:
             if nuevo_calle:
                 campos.append("calle = %s")
                 valores.append(nuevo_calle)
+
             if nuevo_numero:
                 campos.append("numero = %s")
                 valores.append(nuevo_numero)
+
             if nuevo_tipo_casa:
                 campos.append("tipo_casa = %s")
                 valores.append(nuevo_tipo_casa)
@@ -92,19 +92,14 @@ class domicilio:
                 print("No se especificaron campos a actualizar.")
                 return False
 
-            valores.append(valores[0])
+            valores.append(domicilio_id)
 
             query = f"UPDATE domicilios SET {', '.join(campos)} WHERE id = %s"
-            
+
             cursor.execute(query, tuple(valores))
             connection.commit()
 
-            if cursor.rowcount > 0:
-                print("Domicilio actualizado correctamente.")
-                return True
-            else:
-                print("No se realizaron cambios.")
-                return False
+            return cursor.rowcount > 0
 
         except Exception as e:
             print("Error al editar domicilio:", e)
