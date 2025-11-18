@@ -5,6 +5,8 @@ from views2.crud_domicilio_habitante_view import MainMenuCRUDHabitantes
 from views2.editar_habitante_view import MainMenuEditHabitante
 from views2.editar_domicilio_view import MainMenuEditDomicilio
 from views2.editar_colonia_view import MainMenuEditColonia
+from views2.dashboard_view import DashboardView
+
 
 class MainMenu():
     def __init__(self, user):
@@ -41,7 +43,16 @@ class MainMenu():
         ctk.CTkButton(frame, text="Editar Domicilio", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color, command=self.abrir_editar_domicilio).grid(row=3, column=0, pady=pady, columnspan=2)
         ctk.CTkButton(frame, text="Editar Habitante", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color, command=self.abrir_editar_habitante).grid(row=4, column=0, pady=pady, columnspan=2)
         ctk.CTkButton(frame, text="Consultas", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color).grid(row=5, column=0, pady=pady, columnspan=2)
-        ctk.CTkButton(frame, text="Reportes y Gráficas", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color).grid(row=6, column=0, pady=pady, columnspan=2)
+        ctk.CTkButton(
+    frame,
+    text="Dashboard / Reportes",
+    width=width,
+    font=font,
+    corner_radius=corner_radius,
+    fg_color=button_color,
+    text_color=button_text_color,
+    command=self.abrir_dashboard
+).grid(row=6, column=0, pady=pady, columnspan=2)
 
         ctk.CTkLabel(frame, text="", font=font).grid(row=7, column=0, pady=0)
 
@@ -68,4 +79,7 @@ class MainMenu():
     def logout(self):
         self.root.destroy()
         LoginView(on_success=lambda username=self.user: MainMenu(username))
+
+    def abrir_dashboard(self):
+        DashboardView(self.user)
 
