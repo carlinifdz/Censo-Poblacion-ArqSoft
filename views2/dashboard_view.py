@@ -129,27 +129,30 @@ class DashboardView:
 
         self.tabla = ttk.Treeview(
             inner,
-            columns=("vivienda", "colonia", "direccion", "total", "habitantes"),
+            columns=("vivienda", "colonia", "direccion", "total", "habitantes", "actividades"),
             show="headings",
             yscrollcommand=scrollbar.set,
         )
         self.tabla.grid(row=0, column=0, sticky="nsew")
         scrollbar.config(command=self.tabla.yview)
 
-        self.tabla.grid(row=0, column=0, sticky="nsew")
-        scrollbar.config(command=self.tabla.yview)
+        inner.grid_rowconfigure(0, weight=1)
+        inner.grid_columnconfigure(0, weight=1)
 
         self.tabla.heading("vivienda", text="ID Vivienda")
         self.tabla.heading("colonia", text="Colonia")
         self.tabla.heading("direccion", text="Dirección")
         self.tabla.heading("total", text="Total hab.")
         self.tabla.heading("habitantes", text="Quiénes viven")
+        self.tabla.heading("actividades", text="Actividades económicas")
 
-        self.tabla.column("vivienda", width=90, anchor="center")
-        self.tabla.column("colonia", width=140, anchor="w")
+        self.tabla.column("vivienda", width=80, anchor="center")
+        self.tabla.column("colonia", width=120, anchor="w")
         self.tabla.column("direccion", width=180, anchor="w")
         self.tabla.column("total", width=80, anchor="center")
-        self.tabla.column("habitantes", width=320, anchor="w")
+        self.tabla.column("habitantes", width=220, anchor="w")
+        self.tabla.column("actividades", width=220, anchor="w")
+
 
         # Botón actualizar
         btn_frame = ctk.CTkFrame(main_frame, fg_color=config.frame_color, corner_radius=corner_radius)
@@ -238,6 +241,7 @@ class DashboardView:
         )
 
                 # -------- Tabla: quiénes y cuántos viven por vivienda --------
+        # -------- Tabla: quiénes y cuántos viven + actividades eco por vivienda --------
         sql_tabla = """
             SELECT 
                 d.id AS id_vivienda,
@@ -247,7 +251,11 @@ class DashboardView:
                 GROUP_CONCAT(
                     IFNULL(h.nombre, '')
                     SEPARATOR ', '
-                ) AS habitantes
+                ) AS habitantes,
+                GROUP_CONCAT(
+                    DISTINCT IFNULL(h.act_eco, '')
+                    SEPARATOR ', '
+                ) AS actividades
             FROM domicilios d
             LEFT JOIN colonias c ON c.id = d.colonia_id
             LEFT JOIN habitantes h ON h.domicilio_id = d.id
@@ -260,6 +268,7 @@ class DashboardView:
         """
         rows_tabla = self._query(sql_tabla)
         self._fill_table(rows_tabla)
+
 
 
 
@@ -291,8 +300,8 @@ class DashboardView:
         for item in self.tabla.get_children():
             self.tabla.delete(item)
 
-        for id_viv, colonia, direccion, total, habitantes in rows:
-                self.tabla.insert(
+        for id_viv, colonia, direccion, total, habitantes, actividades in rows:
+            self.tabla.insert(
                 "",
                 "end",
                 values=(
@@ -300,9 +309,11 @@ class DashboardView:
                     colonia,
                     direccion,
                     total,
-                    habitantes if habitantes else "-"
+                    habitantes if habitantes else "-",
+                    actividades if actividades else "-"
                 )
             )
+
 
     def cerrar_dashboard(self):
         # Cierra la ventana del dashboard
