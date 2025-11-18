@@ -1,15 +1,43 @@
-font_title = ("Arial", 18, "bold")
-font = ("Arial", 14)
+import customtkinter as ctk
+from tkinter import ttk
 
-bg_color="#FFFDEF"
-frame_color="#F0EEDE"
+mode = 1
 
-button_color = "#d62828"
-button_text_color = "#FFFFFF"
+if mode == 1:
+    appearance = "dark"
+    font_title = ("Arial", 18, "bold")
+    font = ("Arial", 14)
 
-fg_color="#F0EEDE"
+    bg_color="#131313"
+    frame_color="#282828"
 
-pady = 5
-padx = 10
+    button_color = "#8500de"
+    button_text_color = "#FFFFFF"
 
-corner_radius = 16
+    text_color = "#ffffff"
+
+    fg_color="#F0EEDE"
+
+    pady = 5
+    padx = 10
+
+    corner_radius = 16
+elif mode == 2:
+    appearance = "light"
+    font_title = ("Arial", 18, "bold")
+    font = ("Arial", 14)
+
+    bg_color="#FFFDEF"
+    frame_color="#F0EEDE"
+
+    button_color = "#d62828"
+    button_text_color = "#FFFFFF"
+
+    text_color = "#000000"
+
+    fg_color="#F0EEDE"
+
+    pady = 5
+    padx = 10
+
+    corner_radius = 16

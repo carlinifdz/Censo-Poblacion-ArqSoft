@@ -11,7 +11,7 @@ class MainMenuCRUDHabitantes():
     def __init__(self, user):
         self.user = user
 
-        ctk.set_appearance_mode("light")
+        ctk.set_appearance_mode(config.appearance)
 
         self.root = ctk.CTk()
         self.root.title("Censo INEGI")
@@ -24,6 +24,7 @@ class MainMenuCRUDHabitantes():
 
         font_title = config.font_title
         font = config.font
+        text_color = config.text_color
 
         corner_radius = config.corner_radius
         button_color = config.button_color
@@ -39,30 +40,30 @@ class MainMenuCRUDHabitantes():
                 "Casa de piedra","Vivienda prefabricada","Material Ecológico","Casa de paja, ramas o caña","Material Adobe Moderno"]
 
         row = 0
-        ctk.CTkLabel(frame, text="Registro de Vivienda y Habitante", font=font_title).grid(row=row, column=0, sticky = "w", padx =padx, pady=10, columnspan=2)
+        ctk.CTkLabel(frame, text="Registro de Vivienda y Habitante", font=font_title, text_color=text_color).grid(row=row, column=0, sticky = "w", padx =padx, pady=10, columnspan=2)
 
         row = 1
-        ctk.CTkLabel(frame, text="Municipio / Localidad: ", font=font).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Municipio / Localidad: ", font=font, text_color=text_color).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
         self.combobox_ciudad=ctk.CTkComboBox(frame, values=self.values_ciudad, width=width, corner_radius=corner_radius, command=lambda value: self.actualizar_colonias())
         self.combobox_ciudad.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
         self.combobox_ciudad.set("")
         self.combobox_ciudad.bind("<KeyRelease>", self.filtrar_ciudad)
 
-        ctk.CTkLabel(frame, text="Colonia: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Colonia: ", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
         self.combobox_colonia=ctk.CTkComboBox(frame, values=self.values_colonia, width=width, corner_radius=corner_radius)
         self.combobox_colonia.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
         self.combobox_colonia.set("")
         self.combobox_colonia.bind("<KeyRelease>", self.filtrar_colonias)
 
         row = 2
-        ctk.CTkLabel(frame, text="Domicilio: ", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
+        ctk.CTkLabel(frame, text="Domicilio: ", font=font_title, text_color=text_color).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
 
         row = 3
-        ctk.CTkLabel(frame, text="Tipo Vivienda: ", font=font).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Tipo Vivienda: ", font=font, text_color=text_color).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
         self.combobox_t_vivienda=ctk.CTkComboBox(frame, values=values_t_vivienda, width=width, corner_radius=corner_radius, state="readonly")
         self.combobox_t_vivienda.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
 
-        ctk.CTkLabel(frame, text="Calle: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Calle: ", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
         self.entry_calle=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
         self.entry_calle.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
 
@@ -71,49 +72,49 @@ class MainMenuCRUDHabitantes():
 
         validacion = self.root.register(solo_numeros)
 
-        ctk.CTkLabel(frame, text="Numero: ", font=font).grid(row=row, column=4, sticky="e", padx=padx, pady=pady)
+        ctk.CTkLabel(frame, text="Numero: ", font=font, text_color=text_color).grid(row=row, column=4, sticky="e", padx=padx, pady=pady)
         self.entry_num = ctk.CTkEntry(frame, width=width, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
         self.entry_num.grid(row=row, column=5, sticky="w", padx=padx, pady=pady)
 
         row = 4
-        ctk.CTkLabel(frame, text="Habitante: ", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
+        ctk.CTkLabel(frame, text="Habitante: ", font=font_title, text_color=text_color).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
 
         row = 5
-        ctk.CTkLabel(frame, text="Nombre: ", font=font).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Nombre: ", font=font, text_color=text_color).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
         self.entry_nombre=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
         self.entry_nombre.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
 
-        ctk.CTkLabel(frame, text="Sexo(M/F): ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Sexo(M/F): ", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
         self.combobox_sexo=ctk.CTkComboBox(frame, values=["M", "F"], width=75,corner_radius=corner_radius, state="readonly")
         self.combobox_sexo.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
 
         row = 6
-        ctk.CTkLabel(frame, text="Fecha Nacimiento:     Año: ", font=font).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Fecha Nacimiento:     Año: ", font=font, text_color=text_color).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
         self.entry_fec_anno=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
         self.entry_fec_anno.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
 
-        ctk.CTkLabel(frame, text="Mes: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Mes: ", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
         self.entry_fec_mes=ctk.CTkEntry(frame, width=50, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
         self.entry_fec_mes.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
 
-        ctk.CTkLabel(frame, text="Día: ", font=font).grid(row=row, column=4, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Día: ", font=font, text_color=text_color).grid(row=row, column=4, sticky = "e", padx = padx, pady=pady)
         self.entry_fec_dia=ctk.CTkEntry(frame, width=50, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
         self.entry_fec_dia.grid(row=row, column=5, sticky = "w", padx = padx, pady=pady)
 
         row = 7
-        ctk.CTkLabel(frame, text="Actividad Económica: ", font=font).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Actividad Económica: ", font=font, text_color=text_color).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
         self.entry_act_eco=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
         self.entry_act_eco.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
 
         row = 8
 
         self.checkbox_var = ctk.StringVar(value="si")
-        checkbox = ctk.CTkCheckBox(frame, text="¿Tiene actividad económica?", variable=self.checkbox_var, onvalue="si", offvalue="no", command=self.on_checkbox_change)
+        checkbox = ctk.CTkCheckBox(frame,font=font, text_color=text_color, text="¿Tiene actividad económica?", variable=self.checkbox_var, onvalue="si", offvalue="no", command=self.on_checkbox_change)
 
         checkbox.grid(row=row, column=0, padx=padx, pady=pady, sticky="w")
 
         row = 9
-        ctk.CTkLabel(frame, text="", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
+        ctk.CTkLabel(frame, text="", font=font_title, text_color=text_color).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
 
         row = 10
         ctk.CTkButton(frame, text="Registrar Colonia", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color, command= lambda: self.registrar_col()).grid(row=row, column=0, padx = padx, pady=pady)

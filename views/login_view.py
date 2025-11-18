@@ -1,82 +1,77 @@
-# views/login_view.py
-import tkinter as tk
-from tkinter import ttk, messagebox
+import customtkinter as ctk
+import config
+from CTkMessagebox import CTkMessagebox
 from core.session import session
 from registro.usuarios import usuario
 
-class LoginView(ttk.Frame):
-    def __init__(self, master, on_success):
-        super().__init__(master, padding=24)
-        self.on_success = on_success
+class LoginView():
+    def __init__(self, on_success):
         self.usuario_model = usuario()
+        self.on_success = on_success
+        ctk.set_appearance_mode(config.appearance)
 
-        ttk.Label(self, text="Censo INEGI – Login", font=("Segoe UI", 16, "bold")).grid(
-            row=0, column=0, columnspan=2, pady=(0, 14)
-        )
+        self.root = ctk.CTk()
+        self.root.title("Censo INEGI – Login")
+        self.root.geometry("400x400")
+        self.root.configure(fg_color=config.bg_color)
 
-        ttk.Label(self, text="Usuario").grid(row=1, column=0, sticky="e", padx=6, pady=6)
-        ttk.Label(self, text="Contraseña").grid(row=2, column=0, sticky="e", padx=6, pady=6)
+        frame = ctk.CTkFrame(self.root, corner_radius=12, fg_color=config.frame_color)
+        frame.place(relx=0.5, rely=0.5, anchor="center")
 
-        self.user = ttk.Entry(self, width=32)
-        self.pwd = ttk.Entry(self, show="*", width=32)
-        self.user.grid(row=1, column=1, pady=6)
-        self.pwd.grid(row=2, column=1, pady=6)
+        font_title = config.font_title
+        font = config.font
+        text_color = config.text_color
 
-        ttk.Button(self, text="Ingresar", command=self._login).grid(row=3, column=0, columnspan=2, pady=12)
-        ttk.Button(self, text="Registrar usuario", command=self._open_register).grid(row=4, column=0, columnspan=2, pady=(0, 12))
-        ttk.Label(self, text="Tip (demo): admin / admin", foreground="#666").grid(row=5, column=0, columnspan=2)
+        corner_radius = config.corner_radius
+        button_color = config.button_color
+        button_text_color = config.button_text_color
+        pady = config.pady
+        padx = config.padx
 
-    # ---------- LOGIN ----------
+        ctk.CTkLabel(frame, text="Censo INEGI – Login", font=font_title, text_color=text_color).pack(pady=25)
+
+        self.usr = ctk.CTkEntry(frame, placeholder_text="Usuario", width=250, font=font, corner_radius=corner_radius)
+        self.usr.pack(padx=padx, pady=pady)
+        self.pwd = ctk.CTkEntry(frame, placeholder_text="Contraseña", show="*", width=250, font=font, corner_radius=corner_radius)
+        self.pwd.pack(pady=pady)
+
+        ctk.CTkButton(frame, text="Ingresar", width=150, font=font, corner_radius=corner_radius,
+                      fg_color=button_color, text_color=button_text_color, command=self._login).pack(pady=12)
+        ctk.CTkButton(frame, text="Registrar usuario", width=150, font=font, corner_radius=corner_radius,
+                      fg_color=button_color, text_color=button_text_color, command=self._register).pack(pady=12)
+
+        self.root.mainloop()
+
     def _login(self):
-        username = self.user.get().strip()
+        username = self.usr.get().strip()
         password = self.pwd.get().strip()
 
         if not username or not password:
-            messagebox.showwarning("Login", "Por favor, ingrese usuario y contraseña.")
+            CTkMessagebox(title="Login", message="Por favor, ingrese usuario y contraseña.", icon="warning")
             return
 
         ok = self.usuario_model.iniciar_sesion(username, password)
 
         if ok:
             session.login(username)
-            self.on_success()
+            self.root.destroy()
+            self.on_success(username)
         else:
-            messagebox.showerror("Login", "usuario o contraseña incorrectos.")
+            CTkMessagebox(title="Login", message="Usuario o contraseña incorrectos.", icon="warning")
 
-    # ---------- REGISTRO ----------
-    def _open_register(self):
-        """Abre una ventana modal para registrar un nuevo usuario"""
-        reg_win = tk.Toplevel(self)
-        reg_win.title("Registrar nuevo usuario")
-        reg_win.resizable(False, False)
-        reg_win.transient(self)
-        reg_win.grab_set()  # bloquea la ventana principal hasta cerrar el registro
+    def _register(self):
+        username = self.usr.get().strip()
+        password = self.pwd.get().strip()
 
-        ttk.Label(reg_win, text="Registro de usuario", font=("Segoe UI", 13, "bold")).grid(
-            row=0, column=0, columnspan=2, pady=(10, 15)
-        )
+        if not username or not password:
+            CTkMessagebox(title="Login", message="Por favor, ingrese usuario y contraseña.", icon="warning")
+            return
 
-        ttk.Label(reg_win, text="usuario").grid(row=1, column=0, sticky="e", padx=6, pady=6)
-        ttk.Label(reg_win, text="Contraseña").grid(row=2, column=0, sticky="e", padx=6, pady=6)
+        ok = self.usuario_model.registrar_usuario(username, password)
 
-        user_entry = ttk.Entry(reg_win, width=30)
-        pwd_entry = ttk.Entry(reg_win, show="*", width=30)
-        user_entry.grid(row=1, column=1, pady=6)
-        pwd_entry.grid(row=2, column=1, pady=6)
-
-        def registrar():
-            user = user_entry.get().strip()
-            pwd = pwd_entry.get().strip()
-
-            if not user or not pwd:
-                messagebox.showwarning("Registro", "Debe ingresar usuario y contraseña.")
-                return
-
-            ok = self.usuario_model.registrar_usuario(user, pwd)
-            if ok:
-                messagebox.showinfo("Registro", "usuario registrado correctamente.")
-                reg_win.destroy()
-            else:
-                messagebox.showerror("Registro", "No se pudo registrar el usuario (puede que ya exista).")
-
-        ttk.Button(reg_win, text="Registrar", command=registrar).grid(row=3, column=0, columnspan=2, pady=12)
+        if ok:
+            session.login(username)
+            self.root.destroy()
+            self.on_success(username)
+        else:
+            CTkMessagebox(title="Login", message="Usuario o contraseña incorrectos.", icon="warning")

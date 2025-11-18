@@ -10,11 +10,11 @@ import config
 class DashboardView:
     def __init__(self, user):
         self.user = user
-        ctk.set_appearance_mode("light")
+        ctk.set_appearance_mode(config.appearance)
 
         self.root = ctk.CTk()
         self.root.title("Dashboard - Censo INEGI Coahuila")
-        self.root.geometry("1200x800")
+        self.root.geometry("1200x850")
         self.root.resizable(False, False)
         self.root.configure(fg_color=config.bg_color)
 
@@ -60,6 +60,7 @@ class DashboardView:
         button_text_color = config.button_text_color
         pady = config.pady
         padx = config.padx
+        text_color = config.text_color
 
         # Frame principal
         main_frame = ctk.CTkFrame(self.root, fg_color=config.frame_color, corner_radius=corner_radius)
@@ -69,7 +70,7 @@ class DashboardView:
         ctk.CTkLabel(
             main_frame,
             text=f"Dashboard – Censo de Población INEGI (Usuario: {self.user})",
-            font=font_title,
+            font=font_title, text_color=text_color
         ).grid(row=0, column=0, columnspan=3, pady=(0, 15), sticky="w")
 
         # ---------- KPIs ----------
@@ -77,10 +78,10 @@ class DashboardView:
         kpi_frame.grid(row=1, column=0, columnspan=3, sticky="ew", padx=padx, pady=pady)
         kpi_frame.grid_columnconfigure((0, 1, 2, 3), weight=1)
 
-        self.lbl_total_habitantes = ctk.CTkLabel(kpi_frame, text="Habitantes: --", font=font)
-        self.lbl_total_viviendas = ctk.CTkLabel(kpi_frame, text="Viviendas: --", font=font)
-        self.lbl_municipios = ctk.CTkLabel(kpi_frame, text="Municipios (localidad): --", font=font)
-        self.lbl_colonias = ctk.CTkLabel(kpi_frame, text="Colonias: --", font=font)
+        self.lbl_total_habitantes = ctk.CTkLabel(kpi_frame, text="Habitantes: --", font=font, text_color=text_color)
+        self.lbl_total_viviendas = ctk.CTkLabel(kpi_frame, text="Viviendas: --", font=font, text_color=text_color)
+        self.lbl_municipios = ctk.CTkLabel(kpi_frame, text="Municipios (localidad): --", font=font, text_color=text_color)
+        self.lbl_colonias = ctk.CTkLabel(kpi_frame, text="Colonias: --", font=font, text_color=text_color)
 
         self.lbl_total_habitantes.grid(row=0, column=0, padx=padx, pady=pady, sticky="w")
         self.lbl_total_viviendas.grid(row=0, column=1, padx=padx, pady=pady, sticky="w")
@@ -97,7 +98,7 @@ class DashboardView:
         self.frame_municipios = ctk.CTkFrame(charts_frame, fg_color=config.frame_color, corner_radius=corner_radius)
         self.frame_municipios.grid(row=0, column=0, padx=padx, pady=pady, sticky="nsew")
 
-        ctk.CTkLabel(self.frame_municipios, text="Habitantes por municipio (Top 10)", font=font).pack(
+        ctk.CTkLabel(self.frame_municipios, text="Habitantes por municipio (Top 10)", font=font, text_color=text_color).pack(
             anchor="w", padx=10, pady=5
         )
 
@@ -105,7 +106,7 @@ class DashboardView:
         self.frame_tipos = ctk.CTkFrame(charts_frame, fg_color=config.frame_color, corner_radius=corner_radius)
         self.frame_tipos.grid(row=0, column=1, padx=padx, pady=pady, sticky="nsew")
 
-        ctk.CTkLabel(self.frame_tipos, text="Viviendas por tipo", font=font).pack(
+        ctk.CTkLabel(self.frame_tipos, text="Viviendas por tipo", font=font, text_color=text_color).pack(
             anchor="w", padx=10, pady=5
         )
 
@@ -118,7 +119,7 @@ class DashboardView:
         ctk.CTkLabel(
             table_frame,
             text="Quiénes y cuántos viven por vivienda",
-            font=font,
+            font=font, text_color=text_color
         ).grid(row=0, column=0, sticky="w", padx=10, pady=(5, 0))
 
         inner = ctk.CTkFrame(table_frame, fg_color="white", corner_radius=8)
@@ -164,7 +165,7 @@ class DashboardView:
             text="Regresar",
             font=font,
             corner_radius=corner_radius,
-            fg_color="#888888",
+            fg_color=button_color,
             text_color=button_text_color,
             command=self.cerrar_dashboard,
         ).grid(row=0, column=0, pady=10, padx=10, sticky="w")
@@ -287,8 +288,41 @@ class DashboardView:
         ax = fig.add_subplot(111)
         ax.bar(labels, values)
         ax.set_title(title)
-        ax.tick_params(axis="x", rotation=45, labelsize=8)
+        ax.tick_params(axis="x", rotation=0, labelsize=8)
         ax.tick_params(axis="y", labelsize=8)
+
+        # --- NUEVO: texto dentro/encima de las barras ---
+        bars = ax.patches
+        max_height = max(values)
+
+        for bar, label in zip(bars, labels):
+            height = bar.get_height()
+            x = bar.get_x() + bar.get_width() / 2
+
+            if height > max_height * 0.10:
+                ax.text(
+                    x,
+                    height / 2,
+                    label,
+                    ha="center",
+                    va="center",
+                    rotation=90,
+                    fontsize=7,
+                    color="white",
+                    wrap=True
+                )
+            else:
+                ax.text(
+                    x,
+                    height + max_height * 0.02,
+                    label,
+                    ha="center",
+                    va="bottom",
+                    rotation=0,
+                    fontsize=7
+                )
+
+        fig.tight_layout()
 
         canvas = FigureCanvasTkAgg(fig, master=parent)
         canvas.draw()

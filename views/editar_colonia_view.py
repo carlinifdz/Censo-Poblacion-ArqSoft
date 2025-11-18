@@ -8,7 +8,7 @@ class MainMenuEditColonia():
     def __init__(self, user):
         self.user = user
 
-        ctk.set_appearance_mode("light")
+        ctk.set_appearance_mode(config.appearance)
 
         self.root = ctk.CTk()
         self.root.title("Censo INEGI")
@@ -21,6 +21,7 @@ class MainMenuEditColonia():
 
         font_title = config.font_title
         font = config.font
+        text_color = config.text_color
 
         corner_radius = config.corner_radius
         button_color = config.button_color
@@ -34,31 +35,31 @@ class MainMenuEditColonia():
         self.values_colonia=gd.obtener_colonias("")
 
         row = 0
-        ctk.CTkLabel(frame, text="Introduce una colonia", font=font_title).grid(row=row, column=0, sticky = "w", padx =padx, pady=10, columnspan=2)
+        ctk.CTkLabel(frame, text="Introduce una colonia", font=font_title, text_color=text_color).grid(row=row, column=0, sticky = "w", padx =padx, pady=10, columnspan=2)
 
         row = 1
-        ctk.CTkLabel(frame, text="Municipio / Localidad: ", font=font).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Municipio / Localidad: ", font=font, text_color=text_color).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
         self.combobox_ciudad=ctk.CTkComboBox(frame, values=self.values_ciudad, width=width, corner_radius=corner_radius, command=lambda value: self.actualizar_colonias())
         self.combobox_ciudad.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
         self.combobox_ciudad.set("")
         self.combobox_ciudad.bind("<KeyRelease>", self.filtrar_ciudad)
 
-        ctk.CTkLabel(frame, text="Colonia: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Colonia: ", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
         self.combobox_colonia=ctk.CTkComboBox(frame, values=self.values_colonia, width=width, corner_radius=corner_radius)
         self.combobox_colonia.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
         self.combobox_colonia.set("")
         self.combobox_colonia.bind("<KeyRelease>", self.filtrar_colonias)
 
         row = 2
-        ctk.CTkLabel(frame, text="Editar colonia: ", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=pady, columnspan=2)
+        ctk.CTkLabel(frame, text="Editar colonia: ", font=font_title, text_color=text_color).grid(row=row, column=0, sticky = "w", padx = padx, pady=pady, columnspan=2)
         
         row = 3
-        ctk.CTkLabel(frame, text="Colonia: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="Colonia: ", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
         self.entry_colonia=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
         self.entry_colonia.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
 
         row = 4
-        ctk.CTkLabel(frame, text="", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
+        ctk.CTkLabel(frame, text="", font=font, text_color=text_color).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
 
         row = 5
         ctk.CTkButton(frame, text="Editar Colonia", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color, command= lambda: self.editar_colonia()).grid(row=row, column=0, padx = padx, pady=pady)
