@@ -1,209 +1,429 @@
 import customtkinter as ctk
 from tkinter import ttk
 import config
-
-def limpiar_campos():
-    entry_calle.delete(0, "end")
-    entry_num.delete(0, "end")
-    entry_nombre.delete(0, "end")
-    entry_fec_anno.delete(0, "end")
-    entry_fec_mes.delete(0, "end")
-    entry_fec_dia.delete(0, "end")
-    entry_act_eco.configure(state="normal")
-    entry_act_eco.delete(0, "end")
-
-    combobox_ciudad.set("")
-    combobox_colonia.set("")
-    combobox_t_vivienda.set("")
-    combobox_sexo.set("")
-
-    checkbox_var.set("si")
-    on_checkbox_change()
-
-ctk.set_appearance_mode("light")
-
-root = ctk.CTk()
-root.title("Censo INEGI")
-root.geometry("1200x800")
-root.resizable(False, False)
-root.configure(fg_color=config.bg_color)
-
-frame = ctk.CTkFrame(root, corner_radius=12, fg_color=config.frame_color)
-frame.place(relx=0.01, rely=0.01, anchor="nw")
-
-font_title = config.font_title
-font = config.font
-
-corner_radius = config.corner_radius
-button_color = config.button_color
-button_text_color = config.button_text_color
-pady = config.pady
-padx = config.padx
-
-width = 200
-
-values_ciudad = ["si", "no"]
-values_colonia = ["si", "no"]
-values_t_vivienda = [
-    "Vivienda de concreto", "Vivienda de adobe(antiguo)", "Vivienda de ladrillo",
-    "Vivienda de madera", "Vivienda de cartón", "Casa de piedra",
-    "Vivienda prefabricada", "Material Ecológico", "Casa de paja, ramas o caña",
-    "Material Adobe Moderno"
-]
-
-row = 0
-ctk.CTkLabel(frame, text="Consultas de Colonia, Vivienda y Habitante", font=font_title).grid(row=row, column=0, sticky="w", padx=padx, pady=10, columnspan=6)
-
-row = 1
-ctk.CTkLabel(frame, text="Ciudad (Municipio): ", font=font).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
-combobox_ciudad=ctk.CTkComboBox(frame, values=values_ciudad, width=width, corner_radius=corner_radius)
-combobox_ciudad.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
-
-ctk.CTkLabel(frame, text="Colonia: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
-combobox_colonia=ctk.CTkComboBox(frame, values=values_colonia, width=width, corner_radius=corner_radius)
-combobox_colonia.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
-
-row = 2
-ctk.CTkLabel(frame, text="Domicilio: ", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
-
-row = 3
-ctk.CTkLabel(frame, text="Tipo Vivienda: ", font=font).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
-combobox_t_vivienda=ctk.CTkComboBox(frame, values=values_t_vivienda, width=width, corner_radius=corner_radius, state="readonly")
-combobox_t_vivienda.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
-
-ctk.CTkLabel(frame, text="Calle: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
-entry_calle=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
-entry_calle.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
-
-def solo_numeros(valor):
-    return valor.isdigit() or valor == ""
-
-validacion = root.register(solo_numeros)
-
-ctk.CTkLabel(frame, text="Numero: ", font=font).grid(row=row, column=4, sticky="e", padx=padx, pady=pady)
-entry_num = ctk.CTkEntry(frame, width=width, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
-entry_num.grid(row=row, column=5, sticky="w", padx=padx, pady=pady)
-
-row = 4
-ctk.CTkLabel(frame, text="Habitante: ", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
-
-row = 5
-ctk.CTkLabel(frame, text="Nombre: ", font=font).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
-entry_nombre=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
-entry_nombre.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
-
-ctk.CTkLabel(frame, text="Sexo(M/F): ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
-combobox_sexo=ctk.CTkComboBox(frame, values=["M", "F"], width=75,corner_radius=corner_radius, state="readonly")
-combobox_sexo.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
-
-row = 6
-
-def solo_numeros(valor):
-    return valor.isdigit() or valor == ""
-
-validacion = root.register(solo_numeros)
-
-ctk.CTkLabel(frame, text="Fecha Nacimiento:     Año: ", font=font).grid(row=row, column=0, sticky = "e", padx = padx, pady=pady)
-entry_fec_anno=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
-entry_fec_anno.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
-
-ctk.CTkLabel(frame, text="Mes: ", font=font).grid(row=row, column=2, sticky = "e", padx = padx, pady=pady)
-entry_fec_mes=ctk.CTkEntry(frame, width=50, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
-entry_fec_mes.grid(row=row, column=3, sticky = "w", padx = padx, pady=pady)
-
-ctk.CTkLabel(frame, text="Día: ", font=font).grid(row=row, column=4, sticky = "e", padx = padx, pady=pady)
-entry_fec_dia=ctk.CTkEntry(frame, width=50, corner_radius=corner_radius, validate="key", validatecommand=(validacion, "%P"))
-entry_fec_dia.grid(row=row, column=5, sticky = "w", padx = padx, pady=pady)
-
-row = 7
-ctk.CTkLabel(frame, text="Actividad Económica: ", font=font).grid(row=row, sticky = "e", column=0, padx = padx, pady=pady)
-entry_act_eco=ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
-entry_act_eco.grid(row=row, column=1, sticky = "w", padx = padx, pady=pady)
-
-row = 8
-def on_checkbox_change():
-    if checkbox_var.get() == "si":
-        entry_act_eco.configure(state="normal")
-        entry_act_eco.delete(0, "end")
-    else:
-        entry_act_eco.configure(state="normal")
-        entry_act_eco.delete(0, "end")
-        entry_act_eco.insert(0, "Ninguna")
-        entry_act_eco.configure(state="disabled")
-
-checkbox_var = ctk.StringVar(value="si")
-checkbox = ctk.CTkCheckBox(
-    frame,
-    text="¿Tiene actividad económica?",
-    variable=checkbox_var,
-    onvalue="si",
-    offvalue="no",
-    command=on_checkbox_change
-)
-
-checkbox.grid(row=row, column=0, padx=padx, pady=pady, sticky="w")
-
-row = 9
-ctk.CTkLabel(frame, text="Incluir información: ", font=font_title).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
-
-row = 10
-
-var1 = ctk.BooleanVar()
-var2 = ctk.BooleanVar()
-var3 = ctk.BooleanVar()
-var4 = ctk.BooleanVar()
-
-ctk.CTkCheckBox(frame, text="Localidad", variable=var1).grid(row=row, column=0, sticky = "w", padx = padx, pady=10, columnspan=2)
-ctk.CTkCheckBox(frame, text="Colonia", variable=var2).grid(row=row, column=1, sticky = "w", padx = padx, pady=10, columnspan=2)
-ctk.CTkCheckBox(frame, text="Domicilio", variable=var3).grid(row=row, column=2, sticky = "w", padx = padx, pady=10, columnspan=2)
-ctk.CTkCheckBox(frame, text="Habitante", variable=var4).grid(row=row, column=3, sticky = "w", padx = padx, pady=10, columnspan=2)
-
-row = 11
-ctk.CTkButton(frame, text="Buscar por Ciudad", width=width, font=font, corner_radius=corner_radius,fg_color=button_color, text_color=button_text_color).grid(row=row, column=0, padx=padx, pady=pady)
-ctk.CTkButton(frame, text="Buscar por Colonia", width=width, font=font, corner_radius=corner_radius, fg_color=button_color, text_color=button_text_color).grid(row=row, column=1, padx=padx, pady=pady)
-ctk.CTkButton(frame, text="Buscar por Domicilio", width=width, font=font, corner_radius=corner_radius,fg_color=button_color, text_color=button_text_color).grid(row=row, column=2, padx=padx, pady=pady)
-ctk.CTkButton(frame,text="Limpiar campos",width=width,font=font,corner_radius=corner_radius,fg_color=button_color,text_color=button_text_color,command=limpiar_campos).grid(row=row, column=3, padx=padx, pady=pady)
-
-# Ejemplo de tabla, reemplaza esto por los resultados de la busqueda
-row = 12
-tabla_frame = ctk.CTkFrame(frame, fg_color="white", corner_radius=8)
-tabla_frame.grid(row=row, column=0, columnspan=6, padx=padx, pady=15, sticky="nsew")
-
-scrollbar = ttk.Scrollbar(tabla_frame)
-scrollbar.grid(row=0, column=1, sticky="ns")
+from database.conn import get_connection
 
 
+class ConsultasView:
+    def __init__(self, user):
+        self.user = user
 
-tabla = ttk.Treeview(
-    tabla_frame,
-    columns=("col1", "col2", "col3"),
-    show="headings",
-    yscrollcommand=scrollbar.set,
-    height=10
-)
-tabla.grid(row=0, column=0, sticky="nsew")
+        # listas completas para usar en el filtrado
+        self.ciudades_all = []
+        self.colonias_all = []
 
-tabla_frame.grid_rowconfigure(0, weight=1)
-tabla_frame.grid_columnconfigure(0, weight=1)
+        ctk.set_appearance_mode("light")
 
-scrollbar.config(command=tabla.yview)
+        self.root = ctk.CTk()
+        self.root.title("Consultas - Censo INEGI")
 
-tabla.heading("col1", text="ID")
-tabla.heading("col2", text="Nombre")
-tabla.heading("col3", text="Edad")
+        # ventana más pequeña
+        self.root.geometry("1250x580")
+        self.root.resizable(True, False)
+        self.root.configure(fg_color=config.bg_color)
 
-tabla.column("col1", width=50, anchor="center")
-tabla.column("col2", width=200, anchor="w")
-tabla.column("col3", width=100, anchor="center")
+        # refs de widgets que usamos en otros métodos
+        self.combobox_ciudad = None
+        self.combobox_colonia = None
+        self.combobox_t_vivienda = None
+        self.entry_calle = None
+        self.entry_num = None
+        self.entry_act_eco = None
+        self.tabla = None
 
+        self._build_ui()
+        self._load_catalogos()
 
+        self.root.mainloop()
 
-datos = [
-    (1, "Carla", 25),
-    (2, "Luis", 30),
-    (3, "Ana", 22),
-]
-for fila in datos:
-    tabla.insert("", "end", values=fila)
+    # ---------------- BD helper ----------------
 
-root.mainloop()
+    def _query(self, sql, params=None):
+        conn = get_connection()
+        if conn is None:
+            print("Error en la conexión a la base de datos")
+            return []
+
+        try:
+            cur = conn.cursor()
+            cur.execute(sql, params or ())
+            rows = cur.fetchall()
+            return rows
+        except Exception as e:
+            print("Error en consulta:", e)
+            print("SQL:", sql)
+            return []
+        finally:
+            try:
+                cur.close()
+                conn.close()
+            except:
+                pass
+
+    # ---------------- UI ----------------
+
+    def _build_ui(self):
+        font_title = config.font_title
+        font = config.font
+        corner_radius = config.corner_radius
+        button_color = config.button_color
+        button_text_color = config.button_text_color
+        pady = 5
+        padx = config.padx
+        width = 160
+
+        # IMPORTANTE: usamos pack, no place
+        frame = ctk.CTkFrame(self.root, corner_radius=12, fg_color=config.frame_color)
+        frame.pack(fill="both", expand=True, padx=10, pady=10)
+
+        # título
+        row = 0
+        ctk.CTkLabel(
+            frame,
+            text=f"Consultas de Colonia, Vivienda y Habitante - Usuario: {self.user}",
+            font=font_title
+        ).grid(row=row, column=0, sticky="w", padx=padx, pady=10, columnspan=6)
+
+        # ---------------- ciudad / colonia ----------------
+        row = 1
+        ctk.CTkLabel(frame, text="Ciudad (Municipio): ", font=font).grid(
+            row=row, column=0, sticky="e", padx=padx, pady=pady
+        )
+        self.combobox_ciudad = ctk.CTkComboBox(
+            frame, values=[], width=width, corner_radius=corner_radius, state="normal"
+        )
+        self.combobox_ciudad.grid(row=row, column=1, sticky="w", padx=padx, pady=pady)
+        self.combobox_ciudad.bind("<KeyRelease>", self._filtrar_ciudades)
+
+        ctk.CTkLabel(frame, text="Colonia: ", font=font).grid(
+            row=row, column=2, sticky="e", padx=padx, pady=pady
+        )
+        self.combobox_colonia = ctk.CTkComboBox(
+            frame, values=[], width=width, corner_radius=corner_radius, state="normal"
+        )
+        self.combobox_colonia.grid(row=row, column=3, sticky="w", padx=padx, pady=pady)
+        self.combobox_colonia.bind("<KeyRelease>", self._filtrar_colonias)
+
+        # ---------------- domicilio ----------------
+        row = 2
+        ctk.CTkLabel(frame, text="Domicilio: ", font=font_title).grid(
+            row=row, column=0, sticky="w", padx=padx, pady=10, columnspan=2
+        )
+
+        row = 3
+        ctk.CTkLabel(frame, text="Tipo Vivienda: ", font=font).grid(
+            row=row, sticky="e", column=0, padx=padx, pady=pady
+        )
+        values_t_vivienda = [
+            "Vivienda de concreto", "Vivienda de adobe(antiguo)", "Vivienda de ladrillo",
+            "Vivienda de madera", "Vivienda de cartón", "Casa de piedra",
+            "Vivienda prefabricada", "Material Ecológico", "Casa de paja, ramas o caña",
+            "Material Adobe Moderno"
+        ]
+        self.combobox_t_vivienda = ctk.CTkComboBox(
+            frame, values=values_t_vivienda, width=width,
+            corner_radius=corner_radius, state="readonly"
+        )
+        self.combobox_t_vivienda.grid(row=row, column=1, sticky="w", padx=padx, pady=pady)
+
+        ctk.CTkLabel(frame, text="Calle: ", font=font).grid(
+            row=row, column=2, sticky="e", padx=padx, pady=pady
+        )
+        self.entry_calle = ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
+        self.entry_calle.grid(row=row, column=3, sticky="w", padx=padx, pady=pady)
+
+        def solo_numeros(valor):
+            return valor.isdigit() or valor == ""
+
+        validacion = self.root.register(solo_numeros)
+
+        ctk.CTkLabel(frame, text="Número: ", font=font).grid(
+            row=row, column=4, sticky="e", padx=padx, pady=pady
+        )
+        self.entry_num = ctk.CTkEntry(
+            frame, width=width, corner_radius=corner_radius,
+            validate="key", validatecommand=(validacion, "%P")
+        )
+        self.entry_num.grid(row=row, column=5, sticky="w", padx=padx, pady=pady)
+
+        # ---------------- filtros extra (habitante / actividad) ----------------
+        row = 4
+        ctk.CTkLabel(frame, text="Actividad Económica: ", font=font).grid(
+            row=row, sticky="e", column=0, padx=padx, pady=pady
+        )
+        self.entry_act_eco = ctk.CTkEntry(frame, width=width, corner_radius=corner_radius)
+        self.entry_act_eco.grid(row=row, column=1, sticky="w", padx=padx, pady=pady)
+
+        # ---------------- botones de consulta ----------------
+        row = 6
+        ctk.CTkLabel(frame, text="Consultas rápidas:", font=font_title).grid(
+            row=row, column=0, sticky="w", padx=padx, pady=10, columnspan=4
+        )
+
+        row = 7
+        ctk.CTkButton(
+            frame,
+            text="Casas por colonia",
+            width=width,
+            font=font,
+            corner_radius=corner_radius,
+            fg_color=config.button_color,
+            text_color=config.button_text_color,
+            command=self.buscar_casas_por_colonia
+        ).grid(row=row, column=0, padx=padx, pady=pady)
+
+        ctk.CTkButton(
+            frame,
+            text="Habitantes por casa",
+            width=width,
+            font=font,
+            corner_radius=corner_radius,
+            fg_color=config.button_color,
+            text_color=config.button_text_color,
+            command=self.buscar_habitantes_por_casa
+        ).grid(row=row, column=1, padx=padx, pady=pady)
+
+        ctk.CTkButton(
+            frame,
+            text="Por actividad económica",
+            width=width,
+            font=font,
+            corner_radius=corner_radius,
+            fg_color=config.button_color,
+            text_color=config.button_text_color,
+            command=self.buscar_por_actividad
+        ).grid(row=row, column=2, padx=padx, pady=pady)
+
+        ctk.CTkButton(
+            frame,
+            text="Actividades de una casa",
+            width=width,
+            font=font,
+            corner_radius=corner_radius,
+            fg_color=config.button_color,
+            text_color=config.button_text_color,
+            command=self.ver_actividades_casa
+        ).grid(row=row, column=3, padx=padx, pady=pady)
+
+        ctk.CTkButton(
+            frame,
+            text="Limpiar campos",
+            width=width,
+            font=font,
+            corner_radius=corner_radius,
+            fg_color=config.button_color,
+            text_color=config.button_text_color,
+            command=self.limpiar_campos
+        ).grid(row=row, column=4, padx=padx, pady=pady)
+
+        # 🔹 Ahora el botón Regresar va en otra fila
+        row = 8
+        ctk.CTkButton(
+            frame,
+            text="Regresar",
+            width=width,
+            font=font,
+            corner_radius=corner_radius,
+            fg_color="#888888",
+            text_color=config.button_text_color,
+            command=self.cerrar
+        ).grid(row=row, column=0, padx=padx, pady=pady, sticky="w")
+
+        # ---------------- tabla de resultados ----------------
+        row = 9
+        tabla_frame = ctk.CTkFrame(frame, fg_color="white", corner_radius=8)
+        tabla_frame.grid(row=row, column=0, columnspan=6, padx=padx, pady=10, sticky="nsew")
+
+        scrollbar = ttk.Scrollbar(tabla_frame)
+        scrollbar.grid(row=0, column=1, sticky="ns")
+
+        self.tabla = ttk.Treeview(
+            tabla_frame,
+            columns=("col1", "col2", "col3", "col4"),
+            show="headings",
+            yscrollcommand=scrollbar.set,
+            height=8
+        )
+
+        self.tabla.grid(row=0, column=0, sticky="nsew")
+        tabla_frame.grid_rowconfigure(0, weight=1)
+        tabla_frame.grid_columnconfigure(0, weight=1)
+        scrollbar.config(command=self.tabla.yview)
+
+        self._config_tabla(("Columna 1", "Columna 2", "Columna 3", "Columna 4"))
+
+    # ---------------- helpers UI ----------------
+
+    def _config_tabla(self, headers):
+        for i in range(4):
+            name = f"col{i+1}"
+            text = headers[i] if i < len(headers) else ""
+            self.tabla.heading(name, text=text)
+            self.tabla.column(name, width=180, anchor="w")
+
+    def _llenar_tabla(self, rows):
+        for item in self.tabla.get_children():
+            self.tabla.delete(item)
+        for r in rows:
+            r = list(r)
+            if len(r) < 4:
+                r += [""] * (4 - len(r))
+            self.tabla.insert("", "end", values=r)
+
+    def limpiar_campos(self):
+        if self.entry_calle:
+            self.entry_calle.delete(0, "end")
+        if self.entry_num:
+            self.entry_num.delete(0, "end")
+        if self.entry_act_eco:
+            self.entry_act_eco.delete(0, "end")
+        if self.combobox_ciudad:
+            self.combobox_ciudad.set("")
+        if self.combobox_colonia:
+            self.combobox_colonia.set("")
+        if self.combobox_t_vivienda:
+            self.combobox_t_vivienda.set("")
+        self._llenar_tabla([])
+
+    # ---------------- carga catálogos + filtrado ----------------
+
+    def _load_catalogos(self):
+        # ciudades
+        rows_ciudad = self._query("SELECT DISTINCT localidad FROM colonias ORDER BY localidad;")
+        self.ciudades_all = [r[0] for r in rows_ciudad]
+        if self.ciudades_all:
+            self.combobox_ciudad.configure(values=self.ciudades_all)
+            self.combobox_ciudad.set("")
+
+        # colonias
+        rows_col = self._query("SELECT DISTINCT nombre FROM colonias ORDER BY nombre;")
+        self.colonias_all = [r[0] for r in rows_col]
+        if self.colonias_all:
+            self.combobox_colonia.configure(values=self.colonias_all)
+            self.combobox_colonia.set("")
+
+    def _filtrar_ciudades(self, event=None):
+        texto = self.combobox_ciudad.get().lower()
+        if not texto:
+            lista = self.ciudades_all
+        else:
+            lista = [c for c in self.ciudades_all if texto in c.lower()]
+            if not lista:
+                lista = self.ciudades_all
+        self.combobox_ciudad.configure(values=lista)
+
+    def _filtrar_colonias(self, event=None):
+        texto = self.combobox_colonia.get().lower()
+        if not texto:
+            lista = self.colonias_all
+        else:
+            lista = [c for c in self.colonias_all if texto in c.lower()]
+            if not lista:
+                lista = self.colonias_all
+        self.combobox_colonia.configure(values=lista)
+
+    # ---------------- obtención ID domicilio ----------------
+
+    def _obtener_id_domicilio(self):
+        ciudad = self.combobox_ciudad.get().strip()
+        colonia = self.combobox_colonia.get().strip()
+        calle = self.entry_calle.get().strip() if self.entry_calle else ""
+        numero = self.entry_num.get().strip() if self.entry_num else ""
+
+        if not (ciudad and colonia and calle and numero):
+            return None
+
+        sql = """
+            SELECT d.id
+            FROM domicilios d
+            JOIN colonias c ON c.id = d.colonia_id
+            WHERE c.localidad = %s
+              AND c.nombre = %s
+              AND d.calle = %s
+              AND d.numero = %s
+            LIMIT 1;
+        """
+        rows = self._query(sql, (ciudad, colonia, calle, numero))
+        return rows[0][0] if rows else None
+
+    # ---------------- consultas ----------------
+
+    def buscar_casas_por_colonia(self):
+        colonia = self.combobox_colonia.get().strip()
+        if not colonia:
+            self._llenar_tabla([])
+            return
+
+        sql = """
+            SELECT 
+                d.id,
+                c.nombre AS colonia,
+                CONCAT(IFNULL(d.calle, ''), ' ', IFNULL(d.numero, '')) AS direccion,
+                d.tipo_casa
+            FROM domicilios d
+            JOIN colonias c ON c.id = d.colonia_id
+            WHERE c.nombre = %s
+            ORDER BY d.id;
+        """
+        rows = self._query(sql, (colonia,))
+        self._config_tabla(("ID Vivienda", "Colonia", "Dirección", "Tipo vivienda"))
+        self._llenar_tabla(rows)
+
+    def buscar_habitantes_por_casa(self):
+        id_dom = self._obtener_id_domicilio()
+        if id_dom is None:
+            self._llenar_tabla([])
+            return
+
+        sql = """
+            SELECT id, nombre, sexo, act_eco
+            FROM habitantes
+            WHERE domicilio_id = %s
+            ORDER BY id;
+        """
+        rows = self._query(sql, (id_dom,))
+        self._config_tabla(("ID Hab.", "Nombre", "Sexo", "Actividad eco."))
+        self._llenar_tabla(rows)
+
+    def buscar_por_actividad(self):
+        act = self.entry_act_eco.get().strip()
+        if not act:
+            self._llenar_tabla([])
+            return
+
+        sql = """
+            SELECT 
+                d.id AS id_vivienda,
+                c.nombre AS colonia,
+                CONCAT(IFNULL(d.calle, ''), ' ', IFNULL(d.numero, '')) AS direccion,
+                GROUP_CONCAT(IFNULL(h.nombre, '') SEPARATOR ', ') AS habitantes
+            FROM habitantes h
+            JOIN domicilios d ON d.id = h.domicilio_id
+            JOIN colonias c ON c.id = d.colonia_id
+            WHERE h.act_eco LIKE %s
+            GROUP BY d.id, c.nombre, d.calle, d.numero
+            ORDER BY d.id;
+        """
+        rows = self._query(sql, ("%" + act + "%",))
+        self._config_tabla(("ID Vivienda", "Colonia", "Dirección", "Habitantes"))
+        self._llenar_tabla(rows)
+
+    def ver_actividades_casa(self):
+        id_dom = self._obtener_id_domicilio()
+        if id_dom is None:
+            self._llenar_tabla([])
+            return
+
+        sql = """
+            SELECT nombre, act_eco
+            FROM habitantes
+            WHERE domicilio_id = %s
+            ORDER BY nombre;
+        """
+        rows = self._query(sql, (id_dom,))
+        rows4 = [(nombre, act, "", "") for nombre, act in rows]
+        self._config_tabla(("Habitante", "Actividad eco.", "", ""))
+        self._llenar_tabla(rows4)
+
+    def cerrar(self):
+        self.root.destroy()
